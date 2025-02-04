@@ -4,6 +4,8 @@ namespace JimmyConcepcion_P1_AP1.Models
     public class Registro
     {
         [Key]
-        public int id { get; set; }
+        public int Id { get; set; }
+        public string Nombres { get; set; }
+
     }
 }
