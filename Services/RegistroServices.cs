@@ -7,52 +7,62 @@ namespace JimmyConcepcion_P1_AP1.Services
 {
     public class RegistroServices
     {
-        private readonly Contexto _context;
-        public RegistroServices(Contexto contexto) => _context = contexto;
+        private readonly IDbContextFactory<Contexto> _dbFactory;
+        public RegistroServices(IDbContextFactory<Contexto> dbFactory)
+        {
+            _dbFactory = dbFactory;
+        }
 
         public async Task<bool> Guardar(Registro registro)
         {
-            return false;
+            if (!await Existe(registro.AporteId))
+                return await Insertar(registro);
+            else
+                return await Modificar(registro);
         }
 
         public async Task<bool> Insertar(Registro registro)
         {
-            return false;
+            await using var contexto = await _dbFactory.CreateDbContextAsync();
+            contexto.Registro.Add(registro);
+            return await contexto.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Modificar(Registro registro)
         {
-            return false;
+            await using var contexto = await _dbFactory.CreateDbContextAsync();
+            contexto.Registro.Update(registro);
+            return await contexto.SaveChangesAsync() > 0;
         }
 
         public async Task<bool> Existe(int id)
         {
-            return false;
-        }
-
-        public async Task<bool> Existe(string? nombre, int? id = null)
-        {
-            return false;
-        }
-
-        public async Task<bool> Existe(int id, string? nombre)
-        {
-            return false;
+            await using var contexto = await _dbFactory.CreateDbContextAsync();
+            return await contexto.Registro.AnyAsync(t => t.AporteId == id);
         }
 
         public async Task<bool> Eliminar(int id)
         {
-            return false;
+            await using var contexto = await _dbFactory.CreateDbContextAsync();
+            var eliminados = await contexto.Registro
+                .Where(t => t.AporteId == id)
+                .ExecuteDeleteAsync();
+            return eliminados > 0;
         }
 
         public async Task<Registro?> Buscar(int id)
         {
-            return null;
+            await using var contexto = await _dbFactory.CreateDbContextAsync();
+            return await contexto.Registro.AsNoTracking()
+                .FirstOrDefaultAsync(t => t.AporteId == id);
         }
 
         public async Task<List<Registro>> Listar(Expression<Func<Registro, bool>> criterio)
         {
-            return new List<Registro>();
+            await using var contexto = await _dbFactory.CreateDbContextAsync();
+            return await contexto.Registro.AsNoTracking()
+                .Where(criterio)
+                .ToListAsync();
         }
 
     }
