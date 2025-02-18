@@ -1,5 +1,6 @@
 using JimmyConcepcion_P1_AP1.Components;
 using JimmyConcepcion_P1_AP1.DAL;
+using JimmyConcepcion_P1_AP1.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,9 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
 var ConStr = builder.Configuration.GetConnectionString("sqlConStr");
 
 builder.Services.AddDbContextFactory<Contexto>(o => o.UseSqlServer(ConStr));
+
+builder.Services.AddScoped<RegistroServices>();
+
 
 var app = builder.Build();
 
