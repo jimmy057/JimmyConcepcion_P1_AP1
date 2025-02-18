@@ -18,7 +18,7 @@ namespace JimmyConcepcion_P1_AP1.Migrations
                     AporteId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Observacion = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Personas = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Persona = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Monto = table.Column<int>(type: "int", nullable: false),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },

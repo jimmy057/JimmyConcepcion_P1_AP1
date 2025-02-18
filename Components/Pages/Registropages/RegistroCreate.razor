@@ -1,5 +1,77 @@
-﻿<h3>RegistroCreate</h3>
+﻿@page "/Registro/Create"
+@using Microsoft.AspNetCore.Components.Forms
+@using JimmyConcepcion_P1_AP1.Services;
+@using JimmyConcepcion_P1_AP1.Models
+@inject RegistroServices registroServices
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Registro de Aportes</PageTitle>
+
+<div class="card shadow-lg">
+    <div class="card-header bg-primary text-white text-center py-2 rounded">
+        <h3 style="font-weight: bold;" class="mb-0">Registro de Aportes</h3>
+    </div>
+
+    <EditForm Model="@registro" OnValidSubmit="Guardar">
+        <DataAnnotationsValidator />
+        <div class="card-body">
+            <div class="mb-3">
+                <label for="Nombre" class="form-label">Nombre de la persona:</label>
+                <InputText id="Nombre" @bind-Value="registro.Persona" class="form-control" />
+                <ValidationMessage For="@(() => registro.Persona)" />
+            </div>
+            <div class="mb-3">
+                <label for="Nombre" class="form-label">Monto:</label>
+                <InputNumber id="Nombre" @bind-Value="registro.Monto" class="form-control" />
+                <ValidationMessage For="@(() => registro.Monto)" />
+            </div>
+
+
+        </div>
+
+        <div class="card-footer bg-light d-flex justify-content-between mt-3">
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary" @onclick="Nuevo"><span class="bi bi-plus"></span> Nuevo</button>
+                <button type="submit" class="btn btn-outline-success"><span class="bi bi-check-circle-fill"></span> Guardar</button>
+                <a href="/Registro/Index" class="btn btn-outline-danger"><span class="bi bi-arrow-bar-left"></span> Retroceder</a>
+            </div>
+        </div>
+    </EditForm>
+</div>
 
 @code {
+    public Registro registro { get; set; }
 
-}
+    protected override async Task OnInitializedAsync()
+    {
+        registro = new Registro();
+    }
+
+    public void Nuevo()
+    {
+        registro = new Registro();
+    }
+
+    public async Task Guardar()
+    {
+        try
+        {
+            if (registro == null)
+            {
+                throw new InvalidOperationException("El objeto registro no está inicializado.");
+            }
+
+            bool guardo = await registroServices.Guardar(registro);
+            if (guardo)
+            {
+                Nuevo();
+                navigationManager.NavigateTo("/Registro/Index");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al guardar la persona: {ex.Message}");
+        }
+    }
+} 

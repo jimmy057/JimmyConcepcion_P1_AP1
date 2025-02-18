@@ -1,5 +1,130 @@
-﻿<h3>RegistroIndex</h3>
+﻿@page "/Registro/Index/"
+@using JimmyConcepcion_P1_AP1.Services;
+@using JimmyConcepcion_P1_AP1.Models
+@inject RegistroServices registroServices
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Consulta de Aportes</PageTitle>
+
+<div class="card shadow-lg">
+    <div class="card-header bg-primary text-white text-center py-2 rounded">
+        <h3 style="font-weight: bold;" class="mb-0">Consulta de Aportes</h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3 align-items-end">
+            <div class="col-md-3">
+                <label for="Filtro" class="form-label">Filtrar por:</label>
+                <select @bind="Filtro" class="form-select">
+                    <option value="" selected disabled>Elija una opción</option>
+                    <option value="AporteId">AporteID</option>
+                    <option value="Nombre">Nombre</option>
+                    <option value="Monto">Monto</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label for="ValorFiltro" class="form-label">Búsqueda:</label>
+                <div class="input-group">
+                    <input @bind="ValorFiltro" class="form-control" placeholder="Buscar" />
+                    <button @onclick="Buscar" class="btn btn-outline-primary" type="button">
+                        <span class="bi bi-search"></span> Buscar
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-3 text-end">
+                <button @onclick="PantallaCrear" class="btn btn-success" type="button">
+                    <span class="bi bi-plus-circle"></span> Crear
+                </button>
+                <button @onclick="Restablecer" class="btn btn-outline-secondary ml-2" type="button">
+                    <span class="bi bi-arrow-clockwise"></span> Restablecer
+                </button>
+            </div>
+        </div>
+
+        <table class="table table-bordered text-center">
+            <thead class="bg-primary text-white">
+                <tr>
+                    <th>AporteID</th>
+                    <th>Personas</th>
+                    <th>Monto</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var registro in ListaRegistro)
+                {
+                    <tr>
+                        <td>@registro.AporteId</td>
+                        <td>@registro.Persona</td>
+                        <td>@registro.Monto</td>
+                        <td>
+                            <button type="button" class="btn btn-outline-success" @onclick="() => PantallaEditar(registro.AporteId)">
+                                <span class="bi bi-pencil-square"></span>
+                            </button>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-outline-danger" @onclick="() => PantallaEliminar(registro.AporteId)">
+                                <span class="bi bi-trash"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer text-end">
+        <p><strong>Total de personas: </strong>@ListaRegistro.Count</p>
+    </div>
+</div>
 
 @code {
+    public List<Registro> ListaRegistro { get; set; } = new List<Registro>();
 
+    public string Filtro { get; set; } = string.Empty;
+    public string ValorFiltro { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListaRegistro = await registroServices.Listar(c => c.AporteId > 0);
+    }
+
+    public void PantallaCrear() => navigationManager.NavigateTo("/Registro/Create");
+
+    public void PantallaEditar(int id)
+    {
+        navigationManager.NavigateTo($"/Registro/Edit/{id}");
+    }
+
+    public void PantallaEliminar(int id)
+    {
+        navigationManager.NavigateTo($"/Registro/Delete/{id}");
+    }
+
+    private async Task Buscar()
+    {
+        if (!string.IsNullOrEmpty(ValorFiltro))
+        {
+            if (Filtro == "AporteId" && int.TryParse(ValorFiltro, out int ciudadId))
+            {
+                ListaRegistro = await registroServices.Listar(c => c.AporteId == ciudadId);
+            }
+            else if (Filtro == "Personas")
+            {
+                ListaRegistro = await registroServices.Listar(c => c.Persona.ToLower().Contains(ValorFiltro.ToLower()));
+            }
+        }
+        else
+        {
+            ListaRegistro = await registroServices.Listar(c => c.AporteId > 0);
+        }
+    }
+
+    private async Task Restablecer()
+    {
+        ListaRegistro = await registroServices.Listar(c => c.AporteId > 0);
+        Filtro = string.Empty;
+        ValorFiltro = string.Empty;
+    }
 }

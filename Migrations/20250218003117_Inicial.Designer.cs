@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JimmyConcepcion_P1_AP1.Migrations
 {
     [DbContext(typeof(Contexto))]
-    [Migration("20250217224937_Inicial")]
+    [Migration("20250218003117_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -43,7 +43,7 @@ namespace JimmyConcepcion_P1_AP1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Personas")
+                    b.Property<string>("Persona")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

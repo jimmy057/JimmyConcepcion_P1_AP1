@@ -40,7 +40,7 @@ namespace JimmyConcepcion_P1_AP1.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Personas")
+                    b.Property<string>("Persona")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
